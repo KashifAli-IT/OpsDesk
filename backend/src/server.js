@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const pool = require("./config/db");
 const ticketRoutes = require("./routes/ticketRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
@@ -45,6 +46,7 @@ app.get("/api/health", async (req, res) => {
 });
 
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
