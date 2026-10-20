@@ -1,10 +1,12 @@
-﻿import { inject, Injectable } from '@angular/core';
+﻿
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import {
   DashboardMetricsResponse,
   TicketsResponse,
+  TicketPriority,
   TicketStatus
 } from '../models/ticket.model';
 
@@ -26,6 +28,7 @@ export class TicketService {
     limit?: number;
     search?: string;
     status?: TicketStatus;
+    priority?: TicketPriority;
   }): Observable<TicketsResponse> {
     let params = new HttpParams();
 
@@ -43,6 +46,10 @@ export class TicketService {
 
     if (options?.status) {
       params = params.set('status', options.status);
+    }
+
+    if (options?.priority) {
+      params = params.set('priority', options.priority);
     }
 
     return this.http.get<TicketsResponse>(

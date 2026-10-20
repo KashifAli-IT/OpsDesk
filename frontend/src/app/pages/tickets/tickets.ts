@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 
 import {
   Ticket,
+  TicketPriority,
   TicketStatus
 } from '../../models/ticket.model';
 import { TicketService } from '../../services/ticket.service';
@@ -26,7 +27,7 @@ export class Tickets implements OnInit {
 
   searchTerm = '';
   statusFilter: TicketStatus | '' = '';
-
+  priorityFilter: TicketPriority | '' = '';
   currentPage = 1;
   pageSize = 10;
   totalTickets = 0;
@@ -45,6 +46,7 @@ export class Tickets implements OnInit {
       limit: number;
       search?: string;
       status?: TicketStatus;
+      priority?: TicketPriority;
     } = {
       page: this.currentPage,
       limit: this.pageSize
@@ -56,6 +58,10 @@ export class Tickets implements OnInit {
 
     if (this.statusFilter) {
       options.status = this.statusFilter;
+    }
+
+    if (this.priorityFilter) {
+      options.priority = this.priorityFilter;
     }
 
     this.ticketService.getTickets(options).subscribe({
@@ -85,6 +91,7 @@ export class Tickets implements OnInit {
   clearFilters(): void {
     this.searchTerm = '';
     this.statusFilter = '';
+    this.priorityFilter = '';
     this.currentPage = 1;
     this.loadTickets();
   }

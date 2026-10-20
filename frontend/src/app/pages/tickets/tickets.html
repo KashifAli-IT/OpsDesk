@@ -67,6 +67,20 @@
         </select>
       </label>
 
+      <label class="priority-field">
+        <span class="sr-only">Filter by priority</span>
+        <select
+          name="priority"
+          [(ngModel)]="priorityFilter"
+        >
+          <option value="">All priorities</option>
+          <option value="low">Low priority</option>
+          <option value="medium">Medium priority</option>
+          <option value="high">High priority</option>
+          <option value="urgent">Urgent priority</option>
+        </select>
+      </label>
+
       <button
         type="submit"
         class="apply-button"
