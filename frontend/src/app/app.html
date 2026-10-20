@@ -15,52 +15,51 @@
       <span class="switcher-arrow">⌄</span>
     </div>
 
+    <div class="nav-label">WORKSPACE</div>
+
+    <nav class="navigation" aria-label="Main navigation">
+      <a
+        class="nav-item"
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="nav-icon">▦</span>
+        <span>Overview</span>
+      </a>
     
-<div class="nav-label">WORKSPACE</div>
+      <a
+        class="nav-item"
+        routerLink="/tickets"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="nav-icon">▤</span>
+        <span>All tickets</span>
+        
+      </a>
 
-<nav class="navigation" aria-label="Main navigation">
-  <a
-    class="nav-item"
-    routerLink="/"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-    ariaCurrentWhenActive="page"
-  >
-    <span class="nav-icon">▦</span>
-    <span>Overview</span>
-  </a>
+      <a
+        class="nav-item"
+        routerLink="/customers"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="nav-icon">♙</span>
+        <span>Customers</span>
+      </a>
 
-  <a
-    class="nav-item"
-    routerLink="/tickets"
-    routerLinkActive="active"
-    ariaCurrentWhenActive="page"
-  >
-    <span class="nav-icon">▤</span>
-    <span>All tickets</span>
-    <span class="nav-count">{{ totalTickets }}</span>
-  </a>
-
-  <a
-    class="nav-item"
-    routerLink="/customers"
-    routerLinkActive="active"
-    ariaCurrentWhenActive="page"
-  >
-    <span class="nav-icon">♙</span>
-    <span>Customers</span>
-  </a>
-
-  <a
-    class="nav-item"
-    routerLink="/reports"
-    routerLinkActive="active"
-    ariaCurrentWhenActive="page"
-  >
-    <span class="nav-icon">▥</span>
-    <span>Reports</span>
-  </a>
-</nav>
+      <a
+        class="nav-item"
+        routerLink="/reports"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="nav-icon">▥</span>
+        <span>Reports</span>
+      </a>
+    </nav>
 
     <div class="sidebar-bottom">
       <div class="help-card">
@@ -87,7 +86,7 @@
       <div class="breadcrumb">
         <span>Workspace</span>
         <span class="breadcrumb-separator">/</span>
-        <strong>Overview</strong>
+        <strong>{{ currentPageTitle }}</strong>
       </div>
       <div class="topbar-actions">
         <span class="environment"><span></span> Development</span>
@@ -95,313 +94,7 @@
         <div class="topbar-avatar">KA</div>
       </div>
     </header>
-
-    <section class="page-content">
-      <div class="welcome-row">
-        <div>
-          <div class="eyebrow">SUPPORT OPERATIONS</div>
-          <h1>Support overview</h1>
-          <p class="page-description">
-            Here's what's happening with your support operations today.
-          </p>
-        </div>
-        <button
-          class="primary-button"
-          type="button"
-          (click)="loadDashboard()"
-          [disabled]="loading"
-        >
-          <span>↻</span> Refresh data
-        </button>
-      </div>
-
-      @if (errorMessage) {
-        <div class="error-banner" role="alert">
-          <strong>Unable to load data</strong>
-          <span>{{ errorMessage }}</span>
-          <button type="button" (click)="loadDashboard()">Try again</button>
-        </div>
-      }
-
-      <div class="metrics-grid">
-        <article class="metric-card">
-          <div class="metric-top">
-            <span class="metric-label">Total tickets</span>
-            <span class="metric-icon icon-purple">▤</span>
-          </div>
-          <div class="metric-value">
-            {{ metrics?.total_tickets ?? '—' }}
-          </div>
-          <div class="metric-foot">
-            <span class="metric-neutral">All records</span>
-            <span>in workspace</span>
-          </div>
-        </article>
-
-        <article class="metric-card">
-          <div class="metric-top">
-            <span class="metric-label">Active tickets</span>
-            <span class="metric-icon icon-blue">◷</span>
-          </div>
-          <div class="metric-value">
-            {{ metrics?.active_tickets ?? '—' }}
-          </div>
-          <div class="metric-foot">
-            <span class="metric-dot dot-blue"></span>
-            <span>Awaiting resolution</span>
-          </div>
-        </article>
-
-        <article class="metric-card">
-          <div class="metric-top">
-            <span class="metric-label">Resolved</span>
-            <span class="metric-icon icon-green">✓</span>
-          </div>
-          <div class="metric-value">
-            {{ metrics?.resolved_tickets ?? '—' }}
-          </div>
-          <div class="metric-foot">
-            <span class="metric-dot dot-green"></span>
-            <span>Successfully handled</span>
-          </div>
-        </article>
-
-        <article class="metric-card">
-          <div class="metric-top">
-            <span class="metric-label">Closed tickets</span>
-            <span class="metric-icon icon-orange">↗</span>
-          </div>
-          <div class="metric-value">
-            {{ metrics?.closed_tickets ?? '—' }}
-          </div>
-          <div class="metric-foot">
-            <span class="metric-dot dot-orange"></span>
-            <span>Completed cases</span>
-          </div>
-        </article>
-      </div>
-
-      <div class="insights-grid">
-        <section class="panel status-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Ticket status</h2>
-              <p>Distribution across all tickets</p>
-            </div>
-            <span class="subtle-button">Live data</span>
-          </div>
-
-          <div class="status-content">
-            <div
-              class="donut-chart"
-              role="img"
-              [attr.aria-label]="'Ticket status distribution across ' + (metrics?.total_tickets ?? 0) + ' tickets'"
-            >
-              <div class="donut-center">
-                <strong>{{ metrics?.total_tickets ?? '—' }}</strong>
-                <span>Total tickets</span>
-              </div>
-            </div>
-
-            <div class="legend">
-              <div class="legend-item">
-                <span class="legend-swatch status-open"></span>
-                <span>Open</span>
-                <strong>{{ metrics?.by_status?.['open'] ?? 0 }}</strong>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch status-progress"></span>
-                <span>In progress</span>
-                <strong>{{ metrics?.by_status?.['in_progress'] ?? 0 }}</strong>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch status-resolved"></span>
-                <span>Resolved</span>
-                <strong>{{ metrics?.by_status?.['resolved'] ?? 0 }}</strong>
-              </div>
-              <div class="legend-item">
-                <span class="legend-swatch status-closed"></span>
-                <span>Closed</span>
-                <strong>{{ metrics?.by_status?.['closed'] ?? 0 }}</strong>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel priority-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Priority breakdown</h2>
-              <p>Tickets by urgency level</p>
-            </div>
-          </div>
-
-          <div class="priority-list">
-            @for (priority of priorities; track priority.key) {
-              <div class="priority-row">
-                <div class="priority-name">
-                  <span class="priority-dot" [class]="priority.className"></span>
-                  {{ priority.label }}
-                  <strong>{{ metrics?.by_priority?.[priority.key] ?? 0 }}</strong>
-                </div>
-                <div class="progress-track">
-                  <span
-                    class="progress-fill"
-                    [class]="priority.fill"
-                    [style.width.%]="metrics?.total_tickets
-                      ? ((metrics?.by_priority?.[priority.key] ?? 0) / metrics!.total_tickets) * 100
-                      : 0"
-                  ></span>
-                </div>
-              </div>
-            }
-          </div>
-        </section>
-      </div>
-
-      <section class="panel tickets-panel">
-        <div class="tickets-heading">
-          <div>
-            <div class="heading-title-row">
-              <h2>Recent tickets</h2>
-              <span class="table-count">{{ totalTickets }}</span>
-            </div>
-            <p>Keep track of your team's latest support requests.</p>
-          </div>
-          <button class="text-button" type="button" (click)="loadTickets()">
-            Refresh tickets <span>↻</span>
-          </button>
-        </div>
-
-        <div class="table-toolbar">
-          <label class="search-box">
-            <span>⌕</span>
-            <input
-              type="search"
-              placeholder="Search tickets..."
-              aria-label="Search tickets"
-              [(ngModel)]="searchTerm"
-              (ngModelChange)="onSearchChange()"
-            >
-          </label>
-
-          <label class="filter-button">
-            <span>☷</span>
-            <span class="filter-label">Status</span>
-            <select
-              aria-label="Filter tickets by status"
-              [(ngModel)]="selectedStatus"
-              (ngModelChange)="onStatusChange()"
-            >
-              @for (status of statuses; track status.value) {
-                <option [value]="status.value">{{ status.label }}</option>
-              }
-            </select>
-          </label>
-        </div>
-
-        @if (loading) {
-          <div class="table-message" role="status">
-            <span class="loading-spinner"></span>
-            Loading tickets from the API...
-          </div>
-        } @else if (tickets.length === 0) {
-          <div class="table-message">
-            <strong>No tickets found</strong>
-            <span>Try changing your search or status filter.</span>
-          </div>
-        } @else {
-          <div class="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th class="ticket-column">TICKET</th>
-                  <th>CUSTOMER</th>
-                  <th>PRIORITY</th>
-                  <th>STATUS</th>
-                  <th>ASSIGNEE</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (ticket of tickets; track trackTicket($index, ticket)) {
-                  <tr>
-                    <td>
-                      <div class="ticket-title">{{ ticket.title }}</div>
-                      <div class="ticket-id">#{{ ticket.id }}</div>
-                    </td>
-                    <td>
-                      <div class="customer-cell">
-                        <span
-                          class="customer-avatar"
-                          [class]="getCustomerColor(ticket.id)"
-                        >
-                          {{ getInitials(ticket.customer_name) }}
-                        </span>
-                        <span>{{ ticket.customer_name }}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span
-                        class="priority-badge"
-                        [class]="ticket.priority"
-                      >
-                        <span></span>{{ formatPriority(ticket.priority) }}
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        class="status-badge"
-                        [class]="ticket.status"
-                      >
-                        <span></span>{{ formatStatus(ticket.status) }}
-                      </span>
-                    </td>
-                    <td class="assignee-cell">
-                      {{ ticket.assigned_to || 'Unassigned' }}
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        }
-
-        <div class="table-footer">
-          <span>
-            Showing
-            <strong>{{ tickets.length }}</strong>
-            of
-            <strong>{{ totalTickets }}</strong>
-            tickets
-          </span>
-
-          <div class="pagination">
-            <button
-              type="button"
-              (click)="previousPage()"
-              [disabled]="currentPage <= 1 || loading"
-              aria-label="Previous page"
-            >←</button>
-
-            <span>
-              Page <strong>{{ currentPage }}</strong>
-              of <strong>{{ totalPages || 1 }}</strong>
-            </span>
-
-            <button
-              type="button"
-              (click)="nextPage()"
-              [disabled]="currentPage >= totalPages || loading"
-              aria-label="Next page"
-            >→</button>
-          </div>
-        </div>
-      </section>
-
-      <footer class="page-footer">
-        <span>© 2026 OpsDesk</span>
-        <span>Support operations, made clearer.</span>
-      </footer>
-    </section>
+    <router-outlet></router-outlet>
   </main>
 </div>
+
