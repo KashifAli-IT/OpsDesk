@@ -4,15 +4,218 @@
     <div>
       <p class="eyebrow">WORKSPACE</p>
       <h1>All tickets</h1>
-      <p>View and manage customer support requests.</p>
+      <p>View, search, and manage customer support requests.</p>
     </div>
+
+    <button
+      type="button"
+      class="refresh-button"
+      (click)="loadTickets()"
+      [disabled]="loading"
+    >
+      <span aria-hidden="true">↻</span>
+      Refresh
+    </button>
   </header>
 
-  <div class="content-card">
-    <h2>Ticket management</h2>
-    <p>
-      This page is ready for the ticket list, search, filters,
-      and ticket actions.
-    </p>
-  </div>
+  <section class="ticket-summary" aria-label="Ticket summary">
+    <div class="summary-card">
+      <span class="summary-label">Total tickets</span>
+      <strong>{{ totalTickets }}</strong>
+      <span class="summary-caption">Matching your filters</span>
+    </div>
+
+    <div class="summary-card">
+      <span class="summary-label">Current page</span>
+      <strong>{{ currentPage }} <span class="page-total">/ {{ totalPages }}</span></strong>
+      <span class="summary-caption">Paginated results</span>
+    </div>
+  </section>
+
+  <section class="content-card">
+    <div class="table-heading">
+      <div>
+        <h2>Ticket directory</h2>
+        <p>Search and filter incoming support requests.</p>
+      </div>
+    </div>
+
+    <form class="filters" (ngSubmit)="applyFilters()">
+      <label class="search-field">
+        <span class="sr-only">Search tickets</span>
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          name="search"
+          [(ngModel)]="searchTerm"
+          placeholder="Search tickets or customers..."
+          autocomplete="off"
+        />
+      </label>
+
+      <label class="status-field">
+        <span class="sr-only">Filter by status</span>
+        <select
+          name="status"
+          [(ngModel)]="statusFilter"
+        >
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="closed">Closed</option>
+        </select>
+      </label>
+
+      <button
+        type="submit"
+        class="apply-button"
+        [disabled]="loading"
+      >
+        Apply filters
+      </button>
+
+      <button
+        type="button"
+        class="clear-button"
+        (click)="clearFilters()"
+        [disabled]="loading"
+      >
+        Clear
+      </button>
+    </form>
+
+    @if (errorMessage) {
+      <div class="state-message error-state" role="alert">
+        <strong>Something went wrong</strong>
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="apply-button" (click)="loadTickets()">
+          Try again
+        </button>
+      </div>
+    } @else if (loading) {
+      <div class="state-message" role="status">
+        <span class="loading-indicator"></span>
+        <p>Loading tickets from the server...</p>
+      </div>
+    } @else if (tickets.length === 0) {
+      <div class="state-message">
+        <span class="empty-icon" aria-hidden="true">⌕</span>
+        <h3>No tickets found</h3>
+        <p>Try changing your search or clearing the filters.</p>
+        <button
+          type="button"
+          class="clear-button"
+          (click)="clearFilters()"
+        >
+          Clear filters
+        </button>
+      </div>
+    } @else {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Ticket</th>
+              <th scope="col">Customer</th>
+              <th scope="col">Priority</th>
+              <th scope="col">Status</th>
+              <th scope="col">Assigned to</th>
+              <th scope="col">Created</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (ticket of tickets; track ticket.id) {
+              <tr>
+                <td class="ticket-cell">
+                  <span class="ticket-id">#{{ ticket.id }}</span>
+                  <strong>{{ ticket.title }}</strong>
+                  <span class="ticket-description">
+                    {{ ticket.description }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="customer-name">
+                    {{ ticket.customer_name }}
+                  </span>
+                  <span class="customer-email">
+                    {{ ticket.customer_email }}
+                  </span>
+                </td>
+
+                <td>
+                  <span
+                    class="priority-badge"
+                    [ngClass]="'priority-' + ticket.priority"
+                  >
+                    <span class="badge-dot"></span>
+                    {{ formatLabel(ticket.priority) }}
+                  </span>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [ngClass]="'status-' + ticket.status"
+                  >
+                    {{ formatLabel(ticket.status) }}
+                  </span>
+                </td>
+
+                <td>
+                  <span class="assignee">
+                    <span class="assignee-avatar">
+                      {{ ticket.assigned_to ? ticket.assigned_to.charAt(0) : '?' }}
+                    </span>
+                    {{ ticket.assigned_to || 'Unassigned' }}
+                  </span>
+                </td>
+
+                <td class="date-cell">
+                  {{ ticket.created_at | date: 'dd MMM yyyy' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="table-footer">
+        <span>
+          Showing
+          <strong>{{ tickets.length }}</strong>
+          of
+          <strong>{{ totalTickets }}</strong>
+          tickets
+        </span>
+
+        <div class="pagination">
+          <button
+            type="button"
+            (click)="previousPage()"
+            [disabled]="currentPage <= 1 || loading"
+            aria-label="Previous page"
+          >
+            ←
+          </button>
+
+          <span>
+            Page <strong>{{ currentPage }}</strong> of
+            <strong>{{ totalPages }}</strong>
+          </span>
+
+          <button
+            type="button"
+            (click)="nextPage()"
+            [disabled]="currentPage >= totalPages || loading"
+            aria-label="Next page"
+          >
+            →
+          </button>
+        </div>
+      </footer>
+    }
+  </section>
 </section>
