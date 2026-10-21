@@ -43,3 +43,23 @@ export interface DashboardMetrics {
 export interface DashboardMetricsResponse {
   data: DashboardMetrics;
 }
+
+export interface TicketResponse {
+  data: Ticket;
+}
+
+export interface TicketUpdate {
+  status?: TicketStatus;
+  priority?: TicketPriority;
+  assigned_to?: string | null;
+}
+
+export interface TicketCreate {
+  title: string;
+  customer_name: string;
+  customer_email: string;
+  description?: string;
+  priority?: TicketPriority;
+  status?: TicketStatus;
+  assigned_to?: string | null;
+}

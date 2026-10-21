@@ -6,8 +6,11 @@ import { Observable } from 'rxjs';
 import {
   DashboardMetricsResponse,
   TicketsResponse,
+  TicketResponse,
+  TicketUpdate,
   TicketPriority,
-  TicketStatus
+  TicketStatus,
+  TicketCreate
 } from '../models/ticket.model';
 
 @Injectable({
@@ -55,6 +58,29 @@ export class TicketService {
     return this.http.get<TicketsResponse>(
       `${this.apiUrl}/tickets`,
       { params }
+    );
+  }
+
+  getTicket(id: number): Observable<TicketResponse> {
+    return this.http.get<TicketResponse>(
+      `${this.apiUrl}/tickets/${id}`
+    );
+  }
+
+  updateTicket(
+    id: number,
+    changes: TicketUpdate
+  ): Observable<TicketResponse> {
+    return this.http.patch<TicketResponse>(
+      `${this.apiUrl}/tickets/${id}`,
+      changes
+    );
+  }
+
+  createTicket(ticket: TicketCreate): Observable<TicketResponse> {
+    return this.http.post<TicketResponse>(
+      `${this.apiUrl}/tickets`,
+      ticket
     );
   }
 }

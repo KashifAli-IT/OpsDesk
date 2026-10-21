@@ -1,0 +1,177 @@
+
+<div class="ticket-detail-page">
+
+  <div class="page-header">
+    <div class="header-copy">
+      <a routerLink="/tickets" class="back-link">
+        <span aria-hidden="true">&larr;</span>
+        Back to tickets
+      </a>
+
+      <p class="eyebrow">SUPPORT OPERATIONS</p>
+      <h1>Ticket Details</h1>
+      <p class="page-description">
+        Review ticket information and manage its status.
+      </p>
+    </div>
+
+    @if (ticket) {
+      <span class="ticket-id">Ticket #{{ ticket.id }}</span>
+    }
+  </div>
+
+  @if (loading) {
+    <section class="state-card" aria-live="polite">
+      <div class="loading-indicator"></div>
+      <p>Loading ticket details...</p>
+    </section>
+  }
+
+  @if (!loading && errorMessage && !ticket) {
+    <section class="state-card error-state" role="alert">
+      <h2>Unable to open ticket</h2>
+      <p>{{ errorMessage }}</p>
+
+      <a routerLink="/tickets" class="button button-secondary">
+        Return to tickets
+      </a>
+    </section>
+  }
+
+  @if (!loading && ticket) {
+    <div class="detail-layout">
+
+      <section class="detail-card">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">TICKET INFORMATION</p>
+            <h2>{{ ticket.title }}</h2>
+          </div>
+
+          <span
+            class="priority-badge"
+            [class.priority-low]="ticket.priority === 'low'"
+            [class.priority-medium]="ticket.priority === 'medium'"
+            [class.priority-high]="ticket.priority === 'high'"
+            [class.priority-urgent]="ticket.priority === 'urgent'"
+          >
+            {{ formatLabel(ticket.priority) }} Priority
+          </span>
+        </div>
+
+        <div class="description-section">
+          <h3>Description</h3>
+          <p class="ticket-description">
+            {{ ticket.description || 'No description provided.' }}
+          </p>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Ticket ID</span>
+            <strong>#{{ ticket.id }}</strong>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Current Status</span>
+            <span
+              class="status-badge"
+              [class.status-open]="ticket.status === 'open'"
+              [class.status-progress]="ticket.status === 'in_progress'"
+              [class.status-resolved]="ticket.status === 'resolved'"
+              [class.status-closed]="ticket.status === 'closed'"
+            >
+              {{ formatLabel(ticket.status) }}
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Assigned To</span>
+            <strong>{{ ticket.assigned_to || 'Unassigned' }}</strong>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Created</span>
+            <strong>{{ ticket.created_at | date:'medium' }}</strong>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">Last Updated</span>
+            <strong>{{ ticket.updated_at | date:'medium' }}</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="detail-card customer-card">
+        <p class="eyebrow">CUSTOMER</p>
+        <h2>Customer Information</h2>
+
+        <div class="customer-avatar" aria-hidden="true">
+          {{ ticket.customer_name.charAt(0).toUpperCase() }}
+        </div>
+
+        <h3 class="customer-name">{{ ticket.customer_name }}</h3>
+        <a
+          class="customer-email"
+          [href]="'mailto:' + ticket.customer_email"
+        >
+          {{ ticket.customer_email }}
+        </a>
+      </aside>
+
+      <section class="detail-card status-card">
+        <div>
+          <p class="eyebrow">WORKFLOW</p>
+          <h2>Update Ticket Status</h2>
+          <p class="section-description">
+            Change the status to reflect the latest progress.
+          </p>
+        </div>
+
+        <form (ngSubmit)="saveStatus()">
+          <label for="ticket-status">New status</label>
+
+          <select
+            id="ticket-status"
+            name="ticketStatus"
+            [(ngModel)]="selectedStatus"
+            [disabled]="saving"
+            required
+          >
+            @for (option of statusOptions; track option.value) {
+              <option [value]="option.value">
+                {{ option.label }}
+              </option>
+            }
+          </select>
+
+          @if (errorMessage) {
+            <p class="feedback-message error-message" role="alert">
+              {{ errorMessage }}
+            </p>
+          }
+
+          @if (successMessage) {
+            <p class="feedback-message success-message" role="status">
+              {{ successMessage }}
+            </p>
+          }
+
+          <button
+            type="submit"
+            class="button button-primary"
+            [disabled]="saving || selectedStatus === ticket.status"
+          >
+            @if (saving) {
+              Saving changes...
+            } @else {
+              Save Status
+            }
+          </button>
+        </form>
+      </section>
+
+    </div>
+  }
+
+</div>

@@ -16,7 +16,127 @@
       <span aria-hidden="true">↻</span>
       Refresh
     </button>
+
+    <button
+      type="button"
+      class="create-button"
+      (click)="toggleCreateForm()"
+    >
+      + Create ticket
+    </button>
   </header>
+
+  @if (successMessage) {
+    <div class="form-message success-message" role="status">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (showCreateForm) {
+    <section class="create-card">
+      <div class="create-heading">
+        <div>
+          <p class="eyebrow">NEW REQUEST</p>
+          <h2>Create ticket</h2>
+          <p>Enter the customer details and support request.</p>
+        </div>
+
+        <button
+          type="button"
+          class="clear-button"
+          (click)="toggleCreateForm()"
+          [disabled]="creatingTicket"
+        >
+          Cancel
+        </button>
+      </div>
+
+      @if (createErrorMessage) {
+        <div class="form-message error-message" role="alert">
+          {{ createErrorMessage }}
+        </div>
+      }
+
+      <form class="create-form" (ngSubmit)="createTicket()">
+        <label>
+          <span>Ticket title *</span>
+          <input
+            type="text"
+            name="title"
+            [(ngModel)]="newTicket.title"
+            maxlength="200"
+            required
+            placeholder="e.g. Cannot reset password"
+          />
+        </label>
+
+        <label>
+          <span>Customer name *</span>
+          <input
+            type="text"
+            name="customer_name"
+            [(ngModel)]="newTicket.customer_name"
+            maxlength="120"
+            required
+            placeholder="Full name"
+          />
+        </label>
+
+        <label>
+          <span>Customer email *</span>
+          <input
+            type="email"
+            name="customer_email"
+            [(ngModel)]="newTicket.customer_email"
+            maxlength="254"
+            required
+            email
+            placeholder="customer@example.com"
+          />
+        </label>
+
+        <label>
+          <span>Priority</span>
+          <select name="priority" [(ngModel)]="newTicket.priority">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+            <option value="urgent">Urgent</option>
+          </select>
+        </label>
+
+        <label class="description-field">
+          <span>Description</span>
+          <textarea
+            name="description"
+            [(ngModel)]="newTicket.description"
+            maxlength="10000"
+            rows="4"
+            placeholder="Describe the customer's issue..."
+          ></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="clear-button"
+            (click)="toggleCreateForm()"
+            [disabled]="creatingTicket"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="create-button"
+            [disabled]="creatingTicket"
+          >
+            {{ creatingTicket ? 'Creating...' : 'Create ticket' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  }
 
   <section class="ticket-summary" aria-label="Ticket summary">
     <div class="summary-card">
@@ -144,7 +264,12 @@
               <tr>
                 <td class="ticket-cell">
                   <span class="ticket-id">#{{ ticket.id }}</span>
-                  <strong>{{ ticket.title }}</strong>
+                  <a
+                    class="ticket-title-link"
+                    [routerLink]="['/tickets', ticket.id]"
+                  >
+                    {{ ticket.title }}
+                  </a>
                   <span class="ticket-description">
                     {{ ticket.description }}
                   </span>
